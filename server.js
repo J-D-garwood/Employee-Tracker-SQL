@@ -12,6 +12,7 @@ const db = mysql.createConnection(
         
     })
 
+//function loopedCLapp
 inquirer
 .prompt([
     {
@@ -54,46 +55,70 @@ inquirer
               });
             break;
         case 'add a department':
-            console.log(act);
             inquirer
             .prompt([
-
-            ])
-            console.log(act);
+                {
+                    type: 'input',
+                    name: 'name',
+                    message: 'Enter the new department\'s name:'
+                }
+            ]).then((res) => {
+                console.log(res)
+            })
             break;
         case 'add a role':
-            console.log(act);
             inquirer
             .prompt([
-
-            ])
+                {
+                    type: 'input',
+                    name: 'title',
+                    message: 'Enter the new role\'s title:'
+                },
+                {
+                    type: 'input',
+                    name: 'salary',
+                    message: 'Enter the role\'s salary:'
+                },
+                {
+                    type: 'input',
+                    name: 'department_id',
+                    message: 'Enter the role\'s department id:'
+                }
+            ]).then((res) => {
+                console.log(res)
+            })
             break;
         case 'add an employee':
-            console.log(act);
             inquirer
             .prompt([
                 {
                     type: 'input',
                     name: 'first_name',
-                    message: 'Enter the employees first name:'
+                    message: 'Enter the employee\'s first name:'
                 },
                 {
                     type: 'input',
                     name: 'last_name',
-                    message: 'Enter the employees last name:'
+                    message: 'Enter the employee\'s last name:'
                 },
                 {
                     type: 'input',
                     name: 'role_id',
-                    message: 'Enter the employees role id:'
+                    message: 'Enter the employee\'s role id:'
+                },
+                {
+                    type: 'input',
+                    name: 'manager_id',
+                    message: 'Enter the employee\s manager id:'
                 }
-            ])
+            ]).then((res) => {
+                console.log(res);
+            })
             break;
         case 'update an employee role':
             console.log(act);
             inquirer
             .prompt([
-
             ])
             break;
     }
