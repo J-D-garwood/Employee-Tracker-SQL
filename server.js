@@ -13,6 +13,7 @@ const db = mysql.createConnection(
     })
 
 //function loopedCLapp
+const cmdLineLoop = () => {
 inquirer
 .prompt([
     {
@@ -63,7 +64,12 @@ inquirer
                     message: 'Enter the new department\'s name:'
                 }
             ]).then((res) => {
-                console.log(res)
+                db.query(`INSERT INTO department (department_name) VALUES (?)`,res.name, (err, result) => {
+                    if (err) {
+                      console.log(err);
+                    }
+                    console.log(result);
+                  });
             })
             break;
         case 'add a role':
@@ -85,7 +91,12 @@ inquirer
                     message: 'Enter the role\'s department id:'
                 }
             ]).then((res) => {
-                console.log(res)
+                db.query(`INSERT INTO role (title, salary, department_id) VALUES ("${res.title}", ${res.salary}, ${res.department_id})`, (err, result) => {
+                    if (err) {
+                      console.log(err);
+                    }
+                    console.log(result);
+                  });
             })
             break;
         case 'add an employee':
@@ -112,7 +123,12 @@ inquirer
                     message: 'Enter the employee\s manager id:'
                 }
             ]).then((res) => {
-                console.log(res);
+                db.query(`INSERT INTO  employee (first_name, last_name, role_id, manager_id) VALUES ("${res.first_name}", "${res.last_name}", ${res.role_id}, ${res.manager_id})`, (err, result) => {
+                    if (err) {
+                      console.log(err);
+                    }
+                    console.log(result);
+                  });
             })
             break;
         case 'update an employee role':
@@ -122,4 +138,28 @@ inquirer
             ])
             break;
     }
-});
+})};
+
+cmdLineLoop();
+
+/*
+const loopedPromiseChain = (iterations, maxIterations) => {
+    if (iterations <= maxIterations) {
+        return cmdLineLoop()
+            .then(() => {
+                return loopedPromiseChain(iterations + 1, maxIterations);
+            });
+    } else {
+        return Promise.resolve();
+    }
+}
+
+const maxIterations = 50;
+
+loopedPromiseChain(1, maxIterations)
+    .then(() => {
+        console.log("loop finito!");
+    })
+    .catch((error) => {
+        console.error("Error: ", error);
+    }*/
