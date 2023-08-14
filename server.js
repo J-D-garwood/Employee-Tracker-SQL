@@ -2,6 +2,10 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 require('dotenv').config();
+//let i = 1;
+//let j = 0;
+let listofids = []
+let current_emp = [];
 
 const db = mysql.createConnection(
     {
@@ -11,30 +15,74 @@ const db = mysql.createConnection(
         database: 'employees_db'
         
     })
+const sort_input_2 = (input) => {
+        const column = input.col;
+        switch(column) {
+            case 'first name':
+                column = "first_name";
+                break;
+            case 'last name':
+                column = "last_name";
+                break;
+            case 'role id':
+                column = "role_id";
+                break;
+            case 'manager id':
+                column = "manager_id";
+                break;
+            }
+        return [res.employee_id.toString(), column, res.new_val];
+        }
+
 const update_employee = async () => {
     //db query and loop to extract ids
     db.query(`SELECT * FROM employee`, (err, result) => {
         if (err) {
           console.log(err);
         }
-        const listofids = {}
-        for (i = 0; i<result.length(); i+=1) {
-            listofids.push(result[i].id);
-            console.log(result[id].id)
+        current_emp = result;
+        listofids = []
+        for (i = 0; i<current_emp.length; i+=1) {
+            listofids.push(current_emp[i].id.toString());
         }
         console.log(listofids);
+        inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'employee_id',
+                message: 'Pick the id of the employee whose entry you want to update: ',
+                choices: listofids
+            },
+            {
+                type: 'list',
+                name: 'col',
+                message: 'Pick the attribute you want to change: ',
+                choices: ['first name', 'last name', 'role id', 'manager id']
+            },
+            {
+                type: 'input',
+                name: 'new_val',
+                message: 'Enter the new value: '
+            }
+        ]).then((res) => sort_input_2(res)).then((sorted) => {
+            db.query('');
+        })
       })
+      }
+
     /*
-    await inquirer
+    inquirer
     .prompt([
         {
             type: 'list',
             name: 'employee_id',
+            /*choices listofids
 
         }
     ])*/
-}
-const view_depart = async () => {
+
+const view_depart = () => {
     db.query(`SELECT * FROM department`, (err, result) => {
         if (err) {
           console.log(err);
@@ -43,7 +91,7 @@ const view_depart = async () => {
       });
 }
 
-const view_roles = async () => {
+const view_roles = () => {
     db.query(`SELECT * FROM role`, (err, result) => {
         if (err) {
             console.log(err);
@@ -52,7 +100,7 @@ const view_roles = async () => {
         });
 }
 
-const view_employees = async () => {
+const view_employees = () => {
     db.query(`SELECT * FROM employee`, (err, result) => {
         if (err) {
           console.log(err);
@@ -61,8 +109,8 @@ const view_employees = async () => {
       });
 }
 
-const add_depart = async () => {
-    await inquirer
+const add_depart = () => {
+    inquirer
     .prompt([
         {
             type: 'input',
@@ -79,8 +127,8 @@ const add_depart = async () => {
     })
 }
 
-const add_role = async () => {
-    await inquirer
+const add_role = () => {
+    inquirer
     .prompt([
         {
             type: 'input',
@@ -107,8 +155,8 @@ const add_role = async () => {
     })
 }
 
-const add_employee = async () => {
-    await inquirer
+const add_employee = () => {
+    inquirer
     .prompt([
         {
             type: 'input',
@@ -141,29 +189,29 @@ const add_employee = async () => {
 }
 
 
-const sort_input = async (input) => {
+const sort_input = (input) => {
     act = input.action;
     switch(act) {
         case 'view all departments':
-            await view_depart();
+            view_depart();
             break;
         case 'view all roles':
-            await view_roles()
+            view_roles()
             break;
         case 'view all employees':
-            await view_employees()
+            view_employees()
             break;
         case 'add a department':
-            await add_depart()
+            add_depart()
             break;
         case 'add a role':
-            await add_role()
+            add_role()
             break;
         case 'add an employee':
-            await add_employee()
+            add_employee()
             break;
         case 'update an employee role':
-            await update_employee()
+            update_employee()
             break;
         }
     }
@@ -177,14 +225,21 @@ const get_input = async () => {
             message: 'What would you like to do?',
             choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role']
         }
-    ]).then((res) => sort_input(res))
+    ]).then((res) => sort_input(res)).then();
 }
 
 //function loopedCLapp
 const main = async () => {
-while (true) {
-    await get_input()
-}}
+
+    while (true) {
+        if(i>j) {
+            j+=1;
+            await get_input()
+            console.log(i);
+            console.log(j)
+        }
+    }
+}
 
 /*
 const main = async () => {
@@ -192,7 +247,8 @@ const main = async () => {
       await cmdLineLoop()
   };
 } */
-main()
+/*main()*/
+get_input()
 /*
 const loopedPromiseChain = (iterations, maxIterations) => {
     if (iterations <= maxIterations) {
