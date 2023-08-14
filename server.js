@@ -1,4 +1,14 @@
+//Need to use JOIN, in schema (Left, Inner)
+//link to other tables (LEFT JOIN)
+//try out different sets of queries in mysql interface
+//use foreign keys to access other tables
+
+//
+
 //const express = require('express');
+
+//look at youtube inquirer prompt list 
+
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 require('dotenv').config();
@@ -214,10 +224,11 @@ const sort_input = (input) => {
             update_employee()
             break;
         }
+        //ADD DEFAULT 
     }
 
-const get_input = async () => {
-    await inquirer
+const get_input = /*async*/ () => {
+    /*await*/ inquirer
     .prompt([
         {
             type: 'list',
