@@ -76,7 +76,7 @@ const update_employee = async () => {
                 message: 'Enter the new value: '
             }
         ]).then((res) => sort_input_2(res)).then((sorted) => {
-            db.query('');
+            db.query(`UPDATE employee SET ${}`);
         })
       })
       }
@@ -93,7 +93,7 @@ const update_employee = async () => {
     ])*/
 
 const view_depart = () => {
-    db.query(`SELECT * FROM department`, (err, result) => {
+    db.query(` SELECT department.id AS ID, department.department_name AS department FROM department`, (err, result) => {
         if (err) {
           console.log(err);
         }
@@ -102,7 +102,7 @@ const view_depart = () => {
 }
 
 const view_roles = () => {
-    db.query(`SELECT * FROM role`, (err, result) => {
+    db.query(`SELECT role.title AS title, role.id AS ID, department.department_name AS department, role.salary AS salary FROM role LEFT JOIN department ON role.department_id = department.id`, (err, result) => {
         if (err) {
             console.log(err);
         }
@@ -111,7 +111,7 @@ const view_roles = () => {
 }
 
 const view_employees = () => {
-    db.query(`SELECT * FROM employee`, (err, result) => {
+    db.query(`SELECT employee.id AS ID, employee.first_name AS name, employee.last_name AS surname, role.title AS title, role.salary AS salary FROM employee LEFT JOIN role ON employee.role_id = role.id`, (err, result) => {
         if (err) {
           console.log(err);
         }
