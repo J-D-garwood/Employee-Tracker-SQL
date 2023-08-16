@@ -1,7 +1,8 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 const { Console } = require('console');
-const { Transform } = require('stream')
+const { Transform } = require('stream');
+const inquirer = require('inquirer');
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -30,7 +31,7 @@ const table = (data) => {
 }
 
 const view_depart = () => {
-db.query(` SELECT department.id AS ID, department.department_name AS department FROM department`, (err, result) => {
+db.query(` SELECT department.id AS ID, department.department_name AS Department FROM department`, (err, result) => {
     if (err) {
         console.log(err);
     }
@@ -49,7 +50,6 @@ const update_employee = () => {
         for (i = 0; i<current_emp.length; i+=1) {
             listofids.push(current_emp[i].id.toString());
         }
-        console.log(listofids);
         inquirer
         .prompt([
             {
@@ -90,7 +90,7 @@ const view_roles = () => {
 }
     
 const view_employees = () => {
-    db.query(`SELECT A.id AS ID, A.first_name AS name, A.last_name AS surname, B.manager_id AS manager, role.title AS title, role.salary AS salary FROM employee A, employee B WHERE A.id = B.manager_id LEFT JOIN role ON employee.role_id = role.id`, (err, result) => {
+    db.query(`SELECT employee.id AS ID, employee.first_name AS Name, employee.last_name AS Surname, role.title AS Title, role.salary AS Salary FROM employee JOIN role ON employee.role_id = role.id`, (err, result) => {
         if (err) {
           console.log(err);
         }
@@ -201,7 +201,12 @@ const sort_input = (input) => {
         case 'update an employee role':
             update_employee();
             break;
-        }
+        case 'delete data':
+            delete_row();
+            break;
+        default:
+            console.log("error")
+    }
         //ADD DEFAULT 
     }
 
@@ -220,8 +225,54 @@ const sort_input_2 = (input) => {
         case 'manager id':
             column = "manager_id";
             break;
+        default:
+            console.log("error");
         }
     return [input.employee_id.toString(), column, input.new_val];
     }
 
-module.exports = {table, update_employee, view_depart, view_roles, view_employees, add_depart, add_role, add_employee, sort_input, sort_input_2};
+const delete_row = () => {
+    inquirer
+    .prompt([
+        {
+            type: 'list',
+            name: 'datatype',
+            message: 'Which type of data would you like to delete',
+            choices: ['employee', 'role', 'department']
+            
+        }
+    ]).then((input) => {
+        db.query(`SELECT * FROM ${input.datatype}`, (err, result) => {
+            if (err) {
+              console.log(err);
+            }
+            tab = result;
+            listofids = []
+            for (i = 0; i<tab.length; i+=1) {
+                listofids.push(tab[i].id.toString());
+            }
+            inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'id_to_del',
+                    message: `Pick the id of the ${input.datatype} whose entry you want to delete`,
+                    choices: listofids
+                },
+            ]).then((res)  => {
+                db.query(`DELETE FROM ${input.datatype} WHERE id = ${res.id_to_del}`,(err, result) => {
+                    if (err) {
+                      console.log(err);
+                    }
+                    console.log(`${input.datatype} deleted!!`)
+                });
+            })
+          })
+    })
+}
+
+const show_depart_bud = () => {
+
+}
+
+module.exports = {delete_row, table, update_employee, view_depart, view_roles, view_employees, add_depart, add_role, add_employee, sort_input, sort_input_2};
