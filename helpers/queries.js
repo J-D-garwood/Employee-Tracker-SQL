@@ -1,6 +1,44 @@
-const { sort_input, sort_input_2 } = require("./sorters.js");
+const mysql = require('mysql2');
+require('dotenv').config();
+const { Console } = require('console');
+const { Transform } = require('stream')
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: process.env.DB_USER,
+        password:process.env.DB_PASSWORD,
+        database: 'employees_db'
+        
+    })
 
-const update_employee = async () => {
+const table = (data) => {
+    // @see https://stackoverflow.com/a/67859384
+    const ts = new Transform({ transform(chunk, enc, cb) { cb(null, chunk) } })
+    const logger = new Console({ stdout: ts })
+    logger.table(data)
+    const table = (ts.read() || '').toString()
+    let result = '';
+    for (let row of table.split(/[\r\n]+/)) {
+    let r = row.replace(/[^┬]*┬/, '┌');
+    r = r.replace(/^├─*┼/, '├');
+    r = r.replace(/│[^│]*/, '');
+    r = r.replace(/^└─*┴/, '└');
+    r = r.replace(/'/g, ' ');
+    result += `${r}\n`;
+    }
+    console.log(result);
+}
+
+const view_depart = () => {
+db.query(` SELECT department.id AS ID, department.department_name AS department FROM department`, (err, result) => {
+    if (err) {
+        console.log(err);
+    }
+    table(result);
+    });
+}
+
+const update_employee = () => {
     //db query and loop to extract ids
     db.query(`SELECT * FROM employee`, (err, result) => {
         if (err) {
@@ -36,27 +74,18 @@ const update_employee = async () => {
                 if (err) {
                     console.log(err);
                   }
-                  console.log(res);
+                  console.log("Employee Updated!!");
             });
         })
       })
 }
 
-const view_depart = () => {
-db.query(` SELECT department.id AS ID, department.department_name AS department FROM department`, (err, result) => {
-    if (err) {
-        console.log(err);
-    }
-    console.log(result);
-    });
-}
-
 const view_roles = () => {
-    db.query(`SELECT role.title AS title, role.id AS ID, department.department_name AS department, role.salary AS salary FROM role LEFT JOIN department ON role.department_id = department.id`, (err, result) => {
+    db.query(`SELECT role.title AS Title, role.id AS ID, department.department_name AS Department, role.salary AS Salary FROM role LEFT JOIN department ON role.department_id = department.id`, (err, result) => {
         if (err) {
             console.log(err);
         }
-        console.log(result);
+        table(result);
         });
 }
     
@@ -65,7 +94,7 @@ const view_employees = () => {
         if (err) {
           console.log(err);
         }
-        console.log(result);
+        table(result);
       });
 }
 
@@ -82,7 +111,7 @@ const add_depart = () => {
             if (err) {
               console.log(err);
             }
-            console.log(result);
+            console.log("Department Added!!!");
           });
     })
 }
@@ -110,7 +139,7 @@ const add_role = () => {
             if (err) {
                 console.log(err);
             }
-            console.log(result);
+            console.log("Role Added!!!");
             });
     })
 }
@@ -143,9 +172,56 @@ const add_employee = () => {
             if (err) {
                 console.log(err);
             }
-            console.log(result);
+            console.log("Employee Added!!!");
             });
     })
 }
 
-module.exports = {update_employee, view_depart, view_roles, view_employees, add_depart, add_role, add_employee};
+const sort_input = (input) => {
+    act = input.action; 
+    switch(act) {
+        case 'view all departments':
+            view_depart();
+            break;
+        case 'view all roles':
+            view_roles();
+            break;
+        case 'view all employees':
+            view_employees();
+            break;
+        case 'add a department':
+            add_depart();
+            break;
+        case 'add a role':
+            add_role();
+            break;
+        case 'add an employee':
+            add_employee();
+            break;
+        case 'update an employee role':
+            update_employee();
+            break;
+        }
+        //ADD DEFAULT 
+    }
+
+const sort_input_2 = (input) => {
+    let column = input.col;
+    switch(column) {
+        case 'first name':
+            column = "first_name";
+            break;
+        case 'last name':
+            column = "last_name";
+            break;
+        case 'role id':
+            column = "role_id";
+            break;
+        case 'manager id':
+            column = "manager_id";
+            break;
+        }
+    return [input.employee_id.toString(), column, input.new_val];
+    }
+
+module.exports = {table, update_employee, view_depart, view_roles, view_employees, add_depart, add_role, add_employee, sort_input, sort_input_2};
