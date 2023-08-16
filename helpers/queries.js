@@ -90,7 +90,7 @@ const view_roles = () => {
 }
     
 const view_employees = () => {
-    db.query(`SELECT employee.id AS ID, employee.first_name AS name, employee.last_name AS surname, role.title AS title, role.salary AS salary FROM employee LEFT JOIN role ON employee.role_id = role.id`, (err, result) => {
+    db.query(`SELECT A.id AS ID, A.first_name AS name, A.last_name AS surname, B.manager_id AS manager, role.title AS title, role.salary AS salary FROM employee A, employee B WHERE A.id = B.manager_id LEFT JOIN role ON employee.role_id = role.id`, (err, result) => {
         if (err) {
           console.log(err);
         }
