@@ -1,17 +1,14 @@
+//importing
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 require('dotenv').config();
-//let i = 1;
-//let j = 0;
-let listofids = []
-let current_emp = [];
 const {delete_row, table, update_employee, view_depart, view_roles, view_employees, add_depart, add_role, add_employee, sort_input, sort_input_2} = require('./helpers/queries.js');
 const { Console } = require('console');
 const { Transform } = require('stream');
 
 
 
-
+//function for prompting for initial user input
 const get_input = () => {
     inquirer
     .prompt([
@@ -32,5 +29,5 @@ const get_input = () => {
             sort_input(res);
     })
 }
-
-get_input()
+//running
+get_input();

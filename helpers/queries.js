@@ -1,8 +1,10 @@
+//importing
 const mysql = require('mysql2');
 require('dotenv').config();
 const { Console } = require('console');
 const { Transform } = require('stream');
 const inquirer = require('inquirer');
+//establishing connection to database
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -12,8 +14,8 @@ const db = mysql.createConnection(
         
     })
 
+// function to sort sql retrieved data into a table - SOURCE: stackoverflow
 const table = (data) => {
-    // @see https://stackoverflow.com/a/67859384
     const ts = new Transform({ transform(chunk, enc, cb) { cb(null, chunk) } })
     const logger = new Console({ stdout: ts })
     logger.table(data)
@@ -30,6 +32,7 @@ const table = (data) => {
     console.log(result);
 }
 
+//function for db query to view all departments
 const view_depart = () => {
 db.query(` SELECT department.id AS ID, department.department_name AS Department FROM department`, (err, result) => {
     if (err) {
@@ -39,6 +42,7 @@ db.query(` SELECT department.id AS ID, department.department_name AS Department 
     });
 }
 
+//function for db query to update employee by id
 const update_employee = () => {
     //db query and loop to extract ids
     db.query(`SELECT * FROM employee`, (err, result) => {
@@ -80,6 +84,7 @@ const update_employee = () => {
       })
 }
 
+//function for db query to view all roles
 const view_roles = () => {
     db.query(`SELECT role.title AS Title, role.id AS ID, department.department_name AS Department, role.salary AS Salary FROM role LEFT JOIN department ON role.department_id = department.id`, (err, result) => {
         if (err) {
@@ -89,6 +94,7 @@ const view_roles = () => {
         });
 }
     
+//function for db query to view all employees
 const view_employees = () => {
     db.query(`SELECT employee.id AS ID, employee.first_name AS Name, employee.last_name AS Surname, role.title AS Title, role.salary AS Salary FROM employee JOIN role ON employee.role_id = role.id`, (err, result) => {
         if (err) {
@@ -98,6 +104,7 @@ const view_employees = () => {
       });
 }
 
+//function for db query to add a department
 const add_depart = () => {
     inquirer
     .prompt([
@@ -116,6 +123,7 @@ const add_depart = () => {
     })
 }
 
+//function for db query to add a role
 const add_role = () => {
     inquirer
     .prompt([
@@ -144,6 +152,7 @@ const add_role = () => {
     })
 }
 
+//function for db query to add an employee
 const add_employee = () => {
     inquirer
     .prompt([
@@ -177,6 +186,7 @@ const add_employee = () => {
     })
 }
 
+//function for sort incoming initial input
 const sort_input = (input) => {
     act = input.action; 
     switch(act) {
@@ -210,6 +220,7 @@ const sort_input = (input) => {
         //ADD DEFAULT 
     }
 
+//function for db query to sort inputs for update employee func
 const sort_input_2 = (input) => {
     let column = input.col;
     switch(column) {
@@ -231,6 +242,7 @@ const sort_input_2 = (input) => {
     return [input.employee_id.toString(), column, input.new_val];
     }
 
+//function for db query to delete row by id
 const delete_row = () => {
     inquirer
     .prompt([
@@ -271,8 +283,6 @@ const delete_row = () => {
     })
 }
 
-const show_depart_bud = () => {
 
-}
-
+//exporting functions
 module.exports = {delete_row, table, update_employee, view_depart, view_roles, view_employees, add_depart, add_role, add_employee, sort_input, sort_input_2};
