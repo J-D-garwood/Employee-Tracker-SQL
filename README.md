@@ -29,5 +29,4 @@ N/a
 
 ## Walkthrough Video
 
-[Deployed image 1](./assets/ssets/Deployed_1.png)
-[Deployed image 2](./assets/ssets/Deployed_2.png)
+[Walkthrough Video](./assets/CLI%20app%20walkthrough.mp4)

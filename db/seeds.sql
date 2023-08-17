@@ -1,3 +1,4 @@
+/*Seeding tables with base data*/
 INSERT INTO department (department_name)
 VALUES ("Management"),
        ("Sales"),
